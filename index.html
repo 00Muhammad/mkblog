@@ -797,11 +797,11 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="username">Логин:</label>
-                    <input type="text" id="username" required>
+                    <input type="text" id="username" required placeholder="Введите любой логин">
                 </div>
                 <div class="form-group">
                     <label for="password">Пароль:</label>
-                    <input type="password" id="password" required>
+                    <input type="password" id="password" required placeholder="Введите любой пароль">
                 </div>
                 <div class="modal-buttons">
                     <button type="submit" class="btn btn-primary" style="flex: 1;">Войти</button>
@@ -873,7 +873,7 @@
                     <a href="#" class="nav-link login-btn" id="openLogin">
                         <i class="fas fa-sign-in-alt"></i> Войти
                     </a>
-                    <a href="register.html" class="nav-link register-btn">
+                    <a href="#" class="nav-link register-btn" id="openRegister">
                         <i class="fas fa-user-plus"></i> Регистрация
                     </a>
                 </li>
@@ -1001,7 +1001,6 @@
                         <li><a href="index.html">Главная</a></li>
                         <li><a href="#posts">Лента постов</a></li>
                         <li><a href="#" id="footerLogin">Войти</a></li>
-                        <li><a href="register.html">Регистрация</a></li>
                     </ul>
                 </div>
                 
@@ -1033,14 +1032,532 @@
         </div>
     </footer>
 
-     </main>
+    <script>
+        // Простая система блога с исправленной авторизацией
+        class SimpleBlogSystem {
+            constructor() {
+                this.currentUser = localStorage.getItem('currentUser');
+                this.isLoggedIn = !!this.currentUser;
+                this.posts = JSON.parse(localStorage.getItem('mkblog_posts')) || [];
+                this.likes = JSON.parse(localStorage.getItem('mkblog_likes')) || {};
+                this.comments = JSON.parse(localStorage.getItem('mkblog_comments')) || {};
+                this.init();
+            }
 
-    <!-- ПОДКЛЮЧЕНИЕ JavaScript файлов -->
-    <script src="./js/storage.js"></script>
-    <script src="./js/auth.js"></script>
-    <script src="./js/posts.js"></script>
-    <script src="./js/ui.js"></script>
-    <script src="./js/main.js"></script>
+            init() {
+                this.checkAuth();
+                this.renderPosts();
+                this.setupEventListeners();
+                this.setupMobileMenu();
+                this.setupTheme();
+            }
 
+            checkAuth() {
+                if (this.isLoggedIn) {
+                    this.showUserMenu();
+                    this.showCreatePostSection();
+                } else {
+                    this.showLoginModal();
+                }
+            }
+
+            showLoginModal() {
+                // Модальное окно будет показано при клике на кнопку входа
+            }
+
+            hideLoginModal() {
+                document.getElementById('loginModal').style.display = 'none';
+            }
+
+            login(username, password) {
+                if (username && password) {
+                    this.currentUser = username;
+                    this.isLoggedIn = true;
+                    localStorage.setItem('currentUser', username);
+                    
+                    this.hideLoginModal();
+                    this.showUserMenu();
+                    this.showCreatePostSection();
+                    this.renderPosts();
+                    return true;
+                }
+                return false;
+            }
+
+            logout() {
+                this.currentUser = null;
+                this.isLoggedIn = false;
+                localStorage.removeItem('currentUser');
+                
+                this.hideUserMenu();
+                this.hideCreatePostSection();
+                this.renderPosts();
+                alert('Вы вышли из системы!');
+            }
+
+            showUserMenu() {
+                document.getElementById('authLinks').style.display = 'none';
+                document.getElementById('userMenu').style.display = 'block';
+                document.getElementById('userName').textContent = this.currentUser;
+                document.getElementById('createPostLink').style.display = 'block';
+                document.getElementById('heroCreatePost').style.display = 'inline-block';
+            }
+
+            hideUserMenu() {
+                document.getElementById('authLinks').style.display = 'block';
+                document.getElementById('userMenu').style.display = 'none';
+                document.getElementById('createPostLink').style.display = 'none';
+                document.getElementById('heroCreatePost').style.display = 'none';
+            }
+
+            showCreatePostSection() {
+                document.getElementById('create-post').style.display = 'block';
+            }
+
+            hideCreatePostSection() {
+                document.getElementById('create-post').style.display = 'none';
+            }
+
+            setupMobileMenu() {
+                const hamburger = document.getElementById('hamburger');
+                const navMenu = document.getElementById('navMenu');
+
+                hamburger.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    hamburger.classList.toggle('active');
+                });
+
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', () => {
+                        navMenu.classList.remove('active');
+                        hamburger.classList.remove('active');
+                    });
+                });
+            }
+
+            setupTheme() {
+                const themeToggle = document.getElementById('themeToggle');
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                this.updateThemeIcon(currentTheme);
+
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                    
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    this.updateThemeIcon(newTheme);
+                });
+            }
+
+            updateThemeIcon(theme) {
+                const icon = document.querySelector('#themeToggle i');
+                icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+            }
+
+            setupEventListeners() {
+                // Открытие модального окна входа
+                document.getElementById('openLogin').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('loginModal').style.display = 'block';
+                });
+
+                document.getElementById('footerLogin').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('loginModal').style.display = 'block';
+                });
+
+                document.getElementById('openRegister').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Простая регистрация - сразу входим
+                    const username = prompt('Введите имя пользователя:');
+                    const password = prompt('Введите пароль:');
+                    if (username && password) {
+                        this.login(username, password);
+                        alert('Регистрация успешна! Вы вошли в систему.');
+                    }
+                });
+
+                // Закрытие модального окна
+                document.getElementById('closeModal').addEventListener('click', () => {
+                    this.hideLoginModal();
+                });
+
+                // Форма входа
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+                    
+                    if (this.login(username, password)) {
+                        alert('Успешный вход!');
+                    } else {
+                        alert('Ошибка входа! Проверьте логин и пароль.');
+                    }
+                });
+
+                // Выход из системы
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.logout();
+                });
+
+                // Загрузка медиа
+                const mediaUpload = document.getElementById('mediaUpload');
+                const mediaFile = document.getElementById('mediaFile');
+                const mediaPreview = document.getElementById('mediaPreview');
+
+                mediaUpload.addEventListener('click', () => {
+                    mediaFile.click();
+                });
+
+                mediaFile.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleMediaUpload(e.target.files[0]);
+                    }
+                });
+
+                // Форма создания поста
+                document.getElementById('newPostForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.createPost();
+                });
+
+                document.getElementById('cancelPost').addEventListener('click', () => {
+                    document.getElementById('newPostForm').reset();
+                    mediaPreview.style.display = 'none';
+                    mediaPreview.innerHTML = '';
+                });
+
+                // Поиск
+                document.querySelector('.search-btn').addEventListener('click', () => {
+                    this.performSearch();
+                });
+
+                document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.performSearch();
+                    }
+                });
+
+                // Закрытие модальных окон при клике вне их
+                window.addEventListener('click', (e) => {
+                    const loginModal = document.getElementById('loginModal');
+                    const shareModal = document.getElementById('shareModal');
+                    
+                    if (e.target === loginModal) {
+                        this.hideLoginModal();
+                    }
+                    if (e.target === shareModal) {
+                        closeShareModal();
+                    }
+                });
+            }
+
+            handleMediaUpload(file) {
+                const mediaPreview = document.getElementById('mediaPreview');
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    mediaPreview.style.display = 'block';
+                    
+                    if (file.type.startsWith('image/')) {
+                        mediaPreview.innerHTML = `
+                            <img src="${e.target.result}" class="preview-image" alt="Превью">
+                            <p>Изображение: ${file.name}</p>
+                        `;
+                    } else if (file.type.startsWith('video/')) {
+                        mediaPreview.innerHTML = `
+                            <video src="${e.target.result}" class="preview-video" controls></video>
+                            <p>Видео: ${file.name}</p>
+                        `;
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            createPost() {
+                const title = document.getElementById('postTitle').value;
+                const content = document.getElementById('postContent').value;
+                const category = document.getElementById('postCategory').value;
+                const mediaFile = document.getElementById('mediaFile').files[0];
+
+                if (!title || !content) {
+                    alert('Заполните заголовок и текст поста!');
+                    return;
+                }
+
+                const post = {
+                    id: Date.now(),
+                    author: this.currentUser,
+                    title: title,
+                    content: content,
+                    category: category,
+                    date: new Date().toLocaleString('ru-RU'),
+                    media: null
+                };
+
+                if (mediaFile) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        post.media = {
+                            type: mediaFile.type.startsWith('image/') ? 'image' : 'video',
+                            data: e.target.result,
+                            name: mediaFile.name
+                        };
+                        this.savePost(post);
+                    };
+                    reader.readAsDataURL(mediaFile);
+                } else {
+                    this.savePost(post);
+                }
+            }
+
+            savePost(post) {
+                this.posts.unshift(post);
+                localStorage.setItem('mkblog_posts', JSON.stringify(this.posts));
+                
+                document.getElementById('newPostForm').reset();
+                document.getElementById('mediaPreview').style.display = 'none';
+                document.getElementById('mediaPreview').innerHTML = '';
+                
+                this.renderPosts();
+                alert('Пост успешно опубликован! Теперь его видят все пользователи!');
+            }
+
+            toggleLike(postId) {
+                if (!this.isLoggedIn) {
+                    alert('Войдите в систему чтобы ставить лайки!');
+                    return;
+                }
+
+                const likeKey = `${postId}_${this.currentUser}`;
+                
+                if (this.likes[likeKey]) {
+                    delete this.likes[likeKey];
+                } else {
+                    this.likes[likeKey] = true;
+                }
+
+                localStorage.setItem('mkblog_likes', JSON.stringify(this.likes));
+                this.renderPosts();
+            }
+
+            getLikesCount(postId) {
+                return Object.keys(this.likes).filter(key => key.startsWith(postId + '_')).length;
+            }
+
+            isPostLiked(postId) {
+                const likeKey = `${postId}_${this.currentUser}`;
+                return !!this.likes[likeKey];
+            }
+
+            addComment(postId, text) {
+                if (!this.isLoggedIn) {
+                    alert('Войдите в систему чтобы комментировать!');
+                    return;
+                }
+
+                if (!text || text.trim().length === 0) {
+                    alert('Введите текст комментария!');
+                    return;
+                }
+
+                if (!this.comments[postId]) {
+                    this.comments[postId] = [];
+                }
+
+                this.comments[postId].push({
+                    id: Date.now(),
+                    author: this.currentUser,
+                    text: text.trim(),
+                    date: new Date().toLocaleString('ru-RU')
+                });
+
+                localStorage.setItem('mkblog_comments', JSON.stringify(this.comments));
+                this.renderPosts();
+            }
+
+            getComments(postId) {
+                return this.comments[postId] || [];
+            }
+
+            sharePost(postId) {
+                const postUrl = `${window.location.origin}${window.location.pathname}?post=${postId}`;
+                document.getElementById('shareUrl').value = postUrl;
+                document.getElementById('shareModal').style.display = 'block';
+            }
+
+            performSearch() {
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    this.searchPosts(query);
+                } else {
+                    this.renderPosts();
+                }
+            }
+
+            searchPosts(query) {
+                const filteredPosts = this.posts.filter(post => 
+                    post.title.toLowerCase().includes(query.toLowerCase()) ||
+                    post.content.toLowerCase().includes(query.toLowerCase()) ||
+                    post.author.toLowerCase().includes(query.toLowerCase()) ||
+                    this.getCategoryName(post.category).toLowerCase().includes(query.toLowerCase())
+                );
+
+                this.renderFilteredPosts(filteredPosts, query);
+            }
+
+            renderFilteredPosts(filteredPosts, query) {
+                const container = document.getElementById('postsContainer');
+                const emptyState = document.getElementById('emptyState');
+
+                if (filteredPosts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                <h3>Ничего не найдено</h3>
+                                <p>По запросу "${query}" ничего не найдено</p>
+                                <button onclick="blogSystem.renderPosts()" class="btn btn-outline" style="margin-top: 1rem;">
+                                    Показать все посты
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.renderPostsList(filteredPosts, `Результаты поиска: "${query}"`);
+            }
+
+            renderPosts(postsToRender = null) {
+                const container = document.getElementById('postsContainer');
+                const emptyState = document.getElementById('emptyState');
+                const posts = postsToRender || this.posts;
+
+                if (posts.length === 0) {
+                    emptyState.style.display = 'block';
+                    container.innerHTML = '';
+                    container.appendChild(emptyState);
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                this.renderPostsList(posts);
+            }
+
+            renderPostsList(posts, title = null) {
+                const container = document.getElementById('postsContainer');
+                
+                if (title) {
+                    container.innerHTML = `<h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">${title}</h3>`;
+                } else {
+                    container.innerHTML = '';
+                }
+
+                posts.forEach(post => {
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post-card';
+                    
+                    const likesCount = this.getLikesCount(post.id);
+                    const isLiked = this.isPostLiked(post.id);
+                    const postComments = this.getComments(post.id);
+                    
+                    let mediaHTML = '';
+                    if (post.media) {
+                        if (post.media.type === 'image') {
+                            mediaHTML = `<div class="post-media"><img src="${post.media.data}" alt="Изображение"></div>`;
+                        } else if (post.media.type === 'video') {
+                            mediaHTML = `<div class="post-media"><video src="${post.media.data}" controls></video></div>`;
+                        }
+                    }
+
+                    postElement.innerHTML = `
+                        <div class="post-author">
+                            <div class="author-avatar">${post.author.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div class="author-name">${post.author}</div>
+                                <div class="post-date">${post.date} • ${this.getCategoryName(post.category)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <h3>${post.title}</h3>
+                            <p>${post.content}</p>
+                        </div>
+                        ${mediaHTML}
+                        <div class="post-actions">
+                            <button class="post-action ${isLiked ? 'liked' : ''}" onclick="blogSystem.toggleLike(${post.id})">
+                                <i class="fas fa-heart"></i>
+                                <span class="likes-count">${likesCount}</span>
+                            </button>
+                            <button class="post-action" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
+                                <i class="far fa-comment"></i>
+                                <span class="comments-count">${postComments.length}</span>
+                            </button>
+                            <div class="comments-section" style="display: none;">
+                                <div class="comment-form">
+                                    <input type="text" class="comment-input" placeholder="Напишите комментарий..." 
+                                           onkeypress="if(event.key==='Enter') { blogSystem.addComment(${post.id}, this.value); this.value=''; }">
+                                    <button class="btn btn-primary" onclick="blogSystem.addComment(${post.id}, this.previousElementSibling.value); this.previousElementSibling.value=''">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                    <button class="btn btn-outline" onclick="this.parentElement.parentElement.style.display='none'; this.parentElement.parentElement.previousElementSibling.style.display='flex'">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="comments-list">
+                                    ${postComments.map(comment => `
+                                        <div class="comment">
+                                            <div class="comment-author">${comment.author}</div>
+                                            <div class="comment-text">${comment.text}</div>
+                                            <div class="comment-date" style="font-size: 0.8rem; color: var(--text-secondary);">${comment.date}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <button class="post-action" onclick="blogSystem.sharePost(${post.id})">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    `;
+
+                    container.appendChild(postElement);
+                });
+            }
+
+            getCategoryName(category) {
+                const categories = {
+                    'technology': 'Технологии',
+                    'lifestyle': 'Образ жизни',
+                    'travel': 'Путешествия',
+                    'food': 'Еда',
+                    'other': 'Другое'
+                };
+                return categories[category] || 'Другое';
+            }
+        }
+
+        // Глобальные функции для модального окна шаринга
+        function copyShareUrl() {
+            const shareUrl = document.getElementById('shareUrl');
+            shareUrl.select();
+            document.execCommand('copy');
+            alert('Ссылка скопирована в буфер обмена!');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').style.display = 'none';
+        }
+
+        // Инициализация системы
+        const blogSystem = new SimpleBlogSystem();
+
+        // Глобальный доступ к системе для onclick событий
+        window.blogSystem = blogSystem;
+    </script>
 </body>
 </html>
