@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - MK Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>MK Blog - Админ-панель</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="admin.html" class="nav-link active">Админ-панель</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Форма создания поста -->
+        <section class="admin-section">
+            <h2>Создать новый пост</h2>
+            <form id="postForm" class="post-form">
+                <input type="text" id="postTitle" placeholder="Заголовок поста" required>
+                <textarea id="postContent" placeholder="Содержание поста" rows="6" required></textarea>
+                
+                <div class="file-upload">
+                    <label>Добавить фото:</label>
+                    <input type="file" id="postImage" accept="image/*">
+                </div>
+                
+                <div class="file-upload">
+                    <label>Добавить видео:</label>
+                    <input type="file" id="postVideo" accept="video/*">
+                </div>
+
+                <button type="submit" class="btn-primary">Опубликовать пост</button>
+            </form>
+        </section>
+
+        <!-- Список существующих постов -->
+        <section class="admin-section">
+            <h2>Мои посты</h2>
+            <div id="adminPostsList" class="posts-list">
+                <!-- Посты админа -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

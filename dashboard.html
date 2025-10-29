@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой профиль - MK Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo">
+                    <span class="logo-m">M</span>
+                    <span class="logo-k">K</span>
+                    <span class="logo-text">Blog</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="dashboard.html" class="nav-link active">Мой профиль</a>
+                <a href="profile.html" class="nav-link">Настройки</a>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-dropdown">
+                        <a href="dashboard.html" class="dropdown-item">Мой профиль</a>
+                        <a href="profile.html" class="dropdown-item">Настройки</a>
+                        <button onclick="logoutUser()" class="dropdown-item logout">Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Профиль пользователя -->
+        <section class="profile-header">
+            <div class="profile-cover" id="profileCover">
+                <div class="cover-gradient"></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-avatar" id="profileAvatar"></div>
+                <div class="profile-details">
+                    <h1 id="profileUsername"></h1>
+                    <p class="profile-email" id="profileEmail"></p>
+                    <p class="profile-join-date" id="profileJoinDate"></p>
+                    <div id="profileBio"></div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userPostsCount">0</span>
+                        <span class="stat-label">Постов</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userLikesCount">0</span>
+                        <span class="stat-label">Лайков</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userCommentsCount">0</span>
+                        <span class="stat-label">Комментариев</span>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <a href="profile.html" class="btn btn-outline">⚙️ Настройки профиля</a>
+                <button class="btn btn-primary" onclick="copyProfileLink()">🔗 Скопировать ссылку на профиль</button>
+            </div>
+        </section>
+
+        <!-- Создание поста -->
+        <section class="create-post-section">
+            <div class="create-post-card">
+                <h3>Создать новый пост</h3>
+                <form id="createPostForm" class="post-form">
+                    <input type="text" id="postTitle" placeholder="Заголовок поста" required>
+                    <textarea id="postContent" placeholder="Поделитесь своими мыслями..." rows="4" required></textarea>
+                    
+                    <div class="post-media-upload">
+                        <div class="upload-option">
+                            <input type="file" id="postImage" accept="image/*" class="file-input">
+                            <label for="postImage" class="upload-btn">
+                                <span>📷 Добавить фото</span>
+                            </label>
+                        </div>
+                        <div class="upload-option">
+                            <input type="file" id="postVideo" accept="video/*" class="file-input">
+                            <label for="postVideo" class="upload-btn">
+                                <span>🎥 Добавить видео</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Опубликовать</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Мои посты -->
+        <section class="my-posts-section">
+            <h2>Мои публикации</h2>
+            <div class="posts-grid" id="myPostsGrid">
+                <!-- Мои посты будут здесь -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

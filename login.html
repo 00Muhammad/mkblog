@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - MK Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+    <div class="auth-background">
+        <div class="auth-particles"></div>
+    </div>
+    
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <span class="logo-m">M</span>
+                    <span class="logo-k">K</span>
+                    <span class="logo-text">Blog</span>
+                </div>
+                <h2>С возвращением!</h2>
+                <p>Войдите в свой аккаунт</p>
+            </div>
+
+            <div class="login-tabs">
+                <button class="tab-btn active" onclick="showTab('email')">По Email</button>
+                <button class="tab-btn" onclick="showTab('phone')">По Телефону</button>
+            </div>
+
+            <form id="emailLoginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="email">Email адрес</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Войти</button>
+            </form>
+
+            <form id="phoneLoginForm" class="auth-form hidden">
+                <div class="form-group">
+                    <label for="phone">Номер телефона</label>
+                    <input type="tel" id="loginPhone" name="phone" placeholder="+7 (999) 999-99-99" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phonePassword">Пароль</label>
+                    <input type="password" id="phonePassword" name="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Войти</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Нет аккаунта? <a href="register.html">Зарегистрируйтесь</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.add('hidden'));
+            
+            if (tab === 'email') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('emailLoginForm').classList.remove('hidden');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('phoneLoginForm').classList.remove('hidden');
+            }
+        }
+
+        // Вход по email
+        document.getElementById('emailLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const result = loginUser(email, password);
+            
+            if (result.success) {
+                alert(result.message);
+                window.location.href = 'dashboard.html';
+            } else {
+                alert(result.message);
+            }
+        });
+
+        // Вход по телефону
+        document.getElementById('phoneLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('phonePassword').value;
+
+            const result = loginByPhone(phone, password);
+            
+            if (result.success) {
+                alert(result.message);
+                window.location.href = 'dashboard.html';
+            } else {
+                alert(result.message);
+            }
+        });
+
+        // Маска для телефона
+        document.getElementById('loginPhone').addEventListener('input', function(e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            e.target.value = '+7' + (x[2] ? ' (' + x[2] : '') + (x[3] ? ') ' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+        });
+    </script>
+</body>
+</html>

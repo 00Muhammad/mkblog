@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - MK Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="logo">
+                    <span class="logo-m">M</span>
+                    <span class="logo-k">K</span>
+                    <span class="logo-text">Blog</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Главная</a>
+                <div id="authButtons" class="auth-buttons">
+                    <a href="login.html" class="btn btn-outline">Войти</a>
+                    <a href="register.html" class="btn btn-primary">Регистрация</a>
+                </div>
+                <div id="userMenu" class="user-menu hidden">
+                    <div class="user-avatar" id="userAvatar"></div>
+                    <div class="user-dropdown">
+                        <a href="dashboard.html" class="dropdown-item">Мой профиль</a>
+                        <a href="profile.html" class="dropdown-item">Настройки</a>
+                        <button onclick="logoutUser()" class="dropdown-item logout">Выйти</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Профиль пользователя -->
+        <section class="profile-header">
+            <div class="profile-cover" id="profileCover">
+                <div class="cover-gradient"></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-avatar" id="profileAvatar"></div>
+                <div class="profile-details">
+                    <h1 id="profileUsername"></h1>
+                    <p class="profile-email" id="profileEmail"></p>
+                    <p class="profile-join-date" id="profileJoinDate"></p>
+                    <div id="profileBio"></div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userPostsCount">0</span>
+                        <span class="stat-label">Постов</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userLikesCount">0</span>
+                        <span class="stat-label">Лайков</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="userCommentsCount">0</span>
+                        <span class="stat-label">Комментариев</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Посты пользователя -->
+        <section class="user-posts-section">
+            <h2>Публикации пользователя</h2>
+            <div class="posts-grid" id="userPostsGrid">
+                <!-- Посты будут загружены здесь -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/profile-view.js"></script>
+</body>
+</html>

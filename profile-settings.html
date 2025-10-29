@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Настройки профиля - MKBLOG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-logo a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .brand-name {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 80px auto 0;
+            padding: 2rem;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .settings-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            outline: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-upload {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-change-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-change-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .avatar-input {
+            display: none;
+        }
+
+        .password-section {
+            border-top: 2px solid #f8f9fa;
+            padding-top: 2rem;
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="index.html">
+                    <div class="logo">MK</div>
+                    <span class="brand-name">BLOG</span>
+                </a>
+            </div>
+            <a href="profile.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Назад к профилю
+            </a>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <div class="settings-card">
+            <h1 class="settings-title">
+                <i class="fas fa-cog"></i> Настройки профиля
+            </h1>
+
+            <!-- Аватар -->
+            <div class="avatar-section">
+                <div class="avatar-upload" id="avatarUpload">
+                    <div class="avatar-preview" id="avatarPreview">
+                        <i class="fas fa-user" id="avatarIcon"></i>
+                    </div>
+                    <button type="button" class="avatar-change-btn" onclick="document.getElementById('avatarInput').click()">
+                        <i class="fas fa-camera"></i> Сменить аватар
+                    </button>
+                    <input type="file" id="avatarInput" class="avatar-input" accept="image/*">
+                </div>
+            </div>
+
+            <form id="profileForm">
+                <h3 class="section-title">Основная информация</h3>
+
+                <div class="form-group">
+                    <label for="username">Имя пользователя:</label>
+                    <input type="text" id="username" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bio">О себе:</label>
+                    <textarea id="bio" placeholder="Расскажите о себе..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Веб-сайт:</label>
+                    <input type="url" id="website" placeholder="https://example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Местоположение:</label>
+                    <input type="text" id="location" placeholder="Город, Страна">
+                </div>
+
+                <div class="password-section">
+                    <h3 class="section-title">Безопасность</h3>
+
+                    <div class="form-group">
+                        <label for="currentPassword">Текущий пароль:</label>
+                        <input type="password" id="currentPassword">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">Новый пароль:</label>
+                        <input type="password" id="newPassword">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Подтвердите пароль:</label>
+                        <input type="password" id="confirmPassword">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                    <a href="profile.html" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Загрузка данных пользователя
+            const username = localStorage.getItem('username') || 'Пользователь';
+            const email = localStorage.getItem('email') || '';
+            const bio = localStorage.getItem('bio') || '';
+            const website = localStorage.getItem('website') || '';
+            const location = localStorage.getItem('location') || '';
+            const avatar = localStorage.getItem('avatar');
+            
+            document.getElementById('username').value = username;
+            document.getElementById('email').value = email;
+            document.getElementById('bio').value = bio;
+            document.getElementById('website').value = website;
+            document.getElementById('location').value = location;
+            
+            // Загрузка аватара
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarIcon = document.getElementById('avatarIcon');
+            
+            if (avatar) {
+                avatarIcon.style.display = 'none';
+                avatarPreview.innerHTML = `<img src="${avatar}" alt="Аватар">`;
+            } else if (username && username !== 'Пользователь') {
+                avatarIcon.textContent = username.charAt(0).toUpperCase();
+            }
+
+            // Загрузка нового аватара
+            document.getElementById('avatarInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarIcon.style.display = 'none';
+                        avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Аватар">`;
+                        localStorage.setItem('avatar', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Обработка формы
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newUsername = document.getElementById('username').value;
+                const newEmail = document.getElementById('email').value;
+                const newBio = document.getElementById('bio').value;
+                const newWebsite = document.getElementById('website').value;
+                const newLocation = document.getElementById('location').value;
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                // Сохранение в localStorage
+                localStorage.setItem('username', newUsername);
+                localStorage.setItem('email', newEmail);
+                localStorage.setItem('bio', newBio);
+                localStorage.setItem('website', newWebsite);
+                localStorage.setItem('location', newLocation);
+
+                // Обновление аватара (текст)
+                if (!localStorage.getItem('avatar') && newUsername && newUsername !== 'Пользователь') {
+                    avatarIcon.textContent = newUsername.charAt(0).toUpperCase();
+                }
+
+                // Проверка смены пароля
+                if (newPassword) {
+                    if (newPassword !== confirmPassword) {
+                        alert('Пароли не совпадают!');
+                        return;
+                    }
+                    if (!currentPassword) {
+                        alert('Введите текущий пароль для смены!');
+                        return;
+                    }
+                    alert('Пароль успешно изменен!');
+                }
+
+                alert('Настройки успешно сохранены!');
+                
+                // Очистка полей пароля
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+            });
+        });
+    </script>
+</body>
+</html>

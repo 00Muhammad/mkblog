@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр поста - MK Blog</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>MK Blog</h1>
+                <span>Digital Thoughts & Ideas</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="admin.html" class="nav-link">Админ-панель</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Детали поста -->
+        <div id="postDetail" class="post-detail">
+            <!-- Пост будет загружаться здесь через JavaScript -->
+        </div>
+
+        <!-- Секция комментариев -->
+        <section class="comments-section">
+            <h3>Комментарии</h3>
+            
+            <!-- Форма добавления комментария -->
+            <form id="commentForm" class="comment-form">
+                <input type="text" id="commentAuthor" placeholder="Ваше имя" required>
+                <textarea id="commentText" placeholder="Ваш комментарий..." rows="3" required></textarea>
+                <button type="submit" class="btn-primary">Добавить комментарий</button>
+            </form>
+
+            <!-- Список комментариев -->
+            <div id="commentsList" class="comments-list">
+                <!-- Комментарии будут загружаться здесь -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/post.js"></script>
+</body>
+</html>
