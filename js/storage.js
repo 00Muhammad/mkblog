@@ -75,16 +75,6 @@ class BlogStorage {
     getComments(postId) {
         return this.comments[postId] || [];
     }
-
-    // Пользователи
-    saveUser(username, userData) {
-        this.users[username] = { ...this.users[username], ...userData };
-        this.saveData();
-    }
-
-    getUser(username) {
-        return this.users[username] || {};
-    }
 }
 
 // Глобальный экземпляр хранилища
