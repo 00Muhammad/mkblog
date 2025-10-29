@@ -1034,14 +1034,22 @@
     </footer>
 
     <script>
+        // Глобальные переменные для хранения данных
+        window.blogData = {
+            posts: JSON.parse(localStorage.getItem('mkblog_posts')) || [],
+            likes: JSON.parse(localStorage.getItem('mkblog_likes')) || {},
+            comments: JSON.parse(localStorage.getItem('mkblog_comments')) || {},
+            currentUser: null,
+            isLoggedIn: localStorage.getItem('isLoggedIn') === 'true'
+        };
+
         class BlogSystem {
             constructor() {
-                this.currentUser = null;
-                this.isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-                // ИСПРАВЛЕНИЕ: Используем общее хранилище для всех пользователей
-                this.posts = JSON.parse(localStorage.getItem('mkblog_posts')) || [];
-                this.likes = JSON.parse(localStorage.getItem('mkblog_likes')) || {};
-                this.comments = JSON.parse(localStorage.getItem('mkblog_comments')) || {};
+                this.currentUser = blogData.currentUser;
+                this.isLoggedIn = blogData.isLoggedIn;
+                this.posts = blogData.posts;
+                this.likes = blogData.likes;
+                this.comments = blogData.comments;
                 this.init();
             }
 
@@ -1056,6 +1064,7 @@
             checkAuth() {
                 if (this.isLoggedIn) {
                     this.currentUser = localStorage.getItem('username') || 'Пользователь';
+                    blogData.currentUser = this.currentUser;
                     this.showUserMenu();
                     this.showCreatePostSection();
                 } else {
@@ -1077,8 +1086,12 @@
                 if (username && password) {
                     this.currentUser = username;
                     this.isLoggedIn = true;
+                    blogData.currentUser = username;
+                    blogData.isLoggedIn = true;
+                    
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('username', username);
+                    
                     this.hideLoginModal();
                     this.showUserMenu();
                     this.showCreatePostSection();
@@ -1091,8 +1104,12 @@
             logout() {
                 this.currentUser = null;
                 this.isLoggedIn = false;
+                blogData.currentUser = null;
+                blogData.isLoggedIn = false;
+                
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('username');
+                
                 this.hideUserMenu();
                 this.hideCreatePostSection();
                 this.showLoginModal();
@@ -1131,7 +1148,6 @@
                     hamburger.classList.toggle('active');
                 });
 
-                // Закрытие меню при клике на ссылку
                 document.querySelectorAll('.nav-link').forEach(link => {
                     link.addEventListener('click', () => {
                         navMenu.classList.remove('active');
@@ -1246,24 +1262,18 @@
                     mediaPreview.innerHTML = '';
                 });
 
-                // Поиск
+                // Поиск - ИСПРАВЛЕННЫЙ
                 document.querySelector('.search-btn').addEventListener('click', () => {
-                    const query = document.getElementById('searchInput').value;
-                    if (query) {
-                        this.searchPosts(query);
-                    }
+                    this.performSearch();
                 });
 
                 document.getElementById('searchInput').addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
-                        const query = document.getElementById('searchInput').value;
-                        if (query) {
-                            this.searchPosts(query);
-                        }
+                        this.performSearch();
                     }
                 });
 
-                // Закрытие модальных окон при клике вне их
+                // Закрытие модальных окон
                 window.addEventListener('click', (e) => {
                     const loginModal = document.getElementById('loginModal');
                     const shareModal = document.getElementById('shareModal');
@@ -1305,7 +1315,6 @@
                 const content = document.getElementById('postContent').value;
                 const category = document.getElementById('postCategory').value;
                 const mediaFile = document.getElementById('mediaFile').files[0];
-                const mediaPreview = document.getElementById('mediaPreview');
 
                 if (!title || !content) {
                     alert('Заполните заголовок и текст поста!');
@@ -1339,8 +1348,9 @@
             }
 
             savePost(post) {
-                this.posts.unshift(post);
                 // ИСПРАВЛЕНИЕ: Сохраняем в общее хранилище
+                this.posts.unshift(post);
+                blogData.posts = this.posts;
                 localStorage.setItem('mkblog_posts', JSON.stringify(this.posts));
                 
                 document.getElementById('newPostForm').reset();
@@ -1351,7 +1361,7 @@
                 alert('Пост успешно опубликован! Теперь его видят все пользователи!');
             }
 
-            // НОВЫЕ МЕТОДЫ ДЛЯ ЛАЙКОВ И КОММЕНТАРИЕВ
+            // ИСПРАВЛЕННЫЕ МЕТОДЫ ДЛЯ ЛАЙКОВ
             toggleLike(postId) {
                 if (!this.isLoggedIn) {
                     alert('Войдите в систему чтобы ставить лайки!');
@@ -1366,6 +1376,8 @@
                     this.likes[likeKey] = true;
                 }
 
+                // Сохраняем в общее хранилище
+                blogData.likes = this.likes;
                 localStorage.setItem('mkblog_likes', JSON.stringify(this.likes));
                 this.renderPosts();
             }
@@ -1379,13 +1391,17 @@
                 return !!this.likes[likeKey];
             }
 
+            // ИСПРАВЛЕННЫЕ МЕТОДЫ ДЛЯ КОММЕНТАРИЕВ
             addComment(postId, text) {
                 if (!this.isLoggedIn) {
                     alert('Войдите в систему чтобы комментировать!');
                     return;
                 }
 
-                if (!text.trim()) return;
+                if (!text || text.trim().length === 0) {
+                    alert('Введите текст комментария!');
+                    return;
+                }
 
                 if (!this.comments[postId]) {
                     this.comments[postId] = [];
@@ -1398,6 +1414,8 @@
                     date: new Date().toLocaleString('ru-RU')
                 });
 
+                // Сохраняем в общее хранилище
+                blogData.comments = this.comments;
                 localStorage.setItem('mkblog_comments', JSON.stringify(this.comments));
                 this.renderPosts();
             }
@@ -1412,12 +1430,57 @@
                 document.getElementById('shareModal').style.display = 'block';
             }
 
-            // ОБНОВЛЕННЫЙ RENDERPOSTS С ЛАЙКАМИ И КОММЕНТАРИЯМИ
-            renderPosts() {
+            // ИСПРАВЛЕННЫЙ ПОИСК
+            performSearch() {
+                const query = document.getElementById('searchInput').value.trim();
+                if (query) {
+                    this.searchPosts(query);
+                } else {
+                    this.renderPosts(); // Показываем все посты если поиск пустой
+                }
+            }
+
+            searchPosts(query) {
+                const filteredPosts = this.posts.filter(post => 
+                    post.title.toLowerCase().includes(query.toLowerCase()) ||
+                    post.content.toLowerCase().includes(query.toLowerCase()) ||
+                    post.author.toLowerCase().includes(query.toLowerCase()) ||
+                    this.getCategoryName(post.category).toLowerCase().includes(query.toLowerCase())
+                );
+
+                this.renderFilteredPosts(filteredPosts, query);
+            }
+
+            renderFilteredPosts(filteredPosts, query) {
                 const container = document.getElementById('postsContainer');
                 const emptyState = document.getElementById('emptyState');
 
-                if (this.posts.length === 0) {
+                if (filteredPosts.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                <h3>Ничего не найдено</h3>
+                                <p>По запросу "${query}" ничего не найдено</p>
+                                <button onclick="blogSystem.renderPosts()" class="btn btn-outline" style="margin-top: 1rem;">
+                                    Показать все посты
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                this.renderPostsList(filteredPosts, `Результаты поиска: "${query}"`);
+            }
+
+            // ОБНОВЛЕННЫЙ RENDERPOSTS
+            renderPosts(postsToRender = null) {
+                const container = document.getElementById('postsContainer');
+                const emptyState = document.getElementById('emptyState');
+                const posts = postsToRender || this.posts;
+
+                if (posts.length === 0) {
                     emptyState.style.display = 'block';
                     container.innerHTML = '';
                     container.appendChild(emptyState);
@@ -1425,12 +1488,21 @@
                 }
 
                 emptyState.style.display = 'none';
-                container.innerHTML = '';
+                this.renderPostsList(posts);
+            }
 
-                this.posts.forEach(post => {
+            renderPostsList(posts, title = null) {
+                const container = document.getElementById('postsContainer');
+                
+                if (title) {
+                    container.innerHTML = `<h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-secondary);">${title}</h3>`;
+                } else {
+                    container.innerHTML = '';
+                }
+
+                posts.forEach(post => {
                     const postElement = document.createElement('div');
                     postElement.className = 'post-card';
-                    postElement.id = `post-${post.id}`;
                     
                     const likesCount = this.getLikesCount(post.id);
                     const isLiked = this.isPostLiked(post.id);
@@ -1463,16 +1535,19 @@
                                 <i class="fas fa-heart"></i>
                                 <span class="likes-count">${likesCount}</span>
                             </button>
-                            <button class="post-action" onclick="this.nextElementSibling.style.display='block'">
+                            <button class="post-action" onclick="this.nextElementSibling.style.display='block'; this.style.display='none'">
                                 <i class="far fa-comment"></i>
                                 <span class="comments-count">${postComments.length}</span>
                             </button>
                             <div class="comments-section" style="display: none;">
                                 <div class="comment-form">
                                     <input type="text" class="comment-input" placeholder="Напишите комментарий..." 
-                                           onkeypress="if(event.key==='Enter') blogSystem.addComment(${post.id}, this.value); this.value=''">
+                                           onkeypress="if(event.key==='Enter') { blogSystem.addComment(${post.id}, this.value); this.value=''; }">
                                     <button class="btn btn-primary" onclick="blogSystem.addComment(${post.id}, this.previousElementSibling.value); this.previousElementSibling.value=''">
                                         <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                    <button class="btn btn-outline" onclick="this.parentElement.parentElement.style.display='none'; this.parentElement.parentElement.previousElementSibling.style.display='flex'">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                                 <div class="comments-list">
@@ -1480,6 +1555,7 @@
                                         <div class="comment">
                                             <div class="comment-author">${comment.author}</div>
                                             <div class="comment-text">${comment.text}</div>
+                                            <div class="comment-date" style="font-size: 0.8rem; color: var(--text-secondary);">${comment.date}</div>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -1504,96 +1580,6 @@
                 };
                 return categories[category] || 'Другое';
             }
-
-            searchPosts(query) {
-                const filteredPosts = this.posts.filter(post => 
-                    post.title.toLowerCase().includes(query.toLowerCase()) ||
-                    post.content.toLowerCase().includes(query.toLowerCase()) ||
-                    post.author.toLowerCase().includes(query.toLowerCase())
-                );
-
-                const container = document.getElementById('postsContainer');
-                const emptyState = document.getElementById('emptyState');
-
-                if (filteredPosts.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-                                <i class="fas fa-search" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                                <h3>Ничего не найдено</h3>
-                                <p>Попробуйте изменить поисковый запрос</p>
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = '';
-                filteredPosts.forEach(post => {
-                    const postElement = document.createElement('div');
-                    postElement.className = 'post-card';
-                    
-                    const likesCount = this.getLikesCount(post.id);
-                    const isLiked = this.isPostLiked(post.id);
-                    const postComments = this.getComments(post.id);
-                    
-                    let mediaHTML = '';
-                    if (post.media) {
-                        if (post.media.type === 'image') {
-                            mediaHTML = `<div class="post-media"><img src="${post.media.data}" alt="Изображение"></div>`;
-                        } else if (post.media.type === 'video') {
-                            mediaHTML = `<div class="post-media"><video src="${post.media.data}" controls></video></div>`;
-                        }
-                    }
-
-                    postElement.innerHTML = `
-                        <div class="post-author">
-                            <div class="author-avatar">${post.author.charAt(0).toUpperCase()}</div>
-                            <div>
-                                <div class="author-name">${post.author}</div>
-                                <div class="post-date">${post.date} • ${this.getCategoryName(post.category)}</div>
-                            </div>
-                        </div>
-                        <div class="post-content">
-                            <h3>${post.title}</h3>
-                            <p>${post.content}</p>
-                        </div>
-                        ${mediaHTML}
-                        <div class="post-actions">
-                            <button class="post-action ${isLiked ? 'liked' : ''}" onclick="blogSystem.toggleLike(${post.id})">
-                                <i class="fas fa-heart"></i>
-                                <span class="likes-count">${likesCount}</span>
-                            </button>
-                            <button class="post-action" onclick="this.nextElementSibling.style.display='block'">
-                                <i class="far fa-comment"></i>
-                                <span class="comments-count">${postComments.length}</span>
-                            </button>
-                            <div class="comments-section" style="display: none;">
-                                <div class="comment-form">
-                                    <input type="text" class="comment-input" placeholder="Напишите комментарий..." 
-                                           onkeypress="if(event.key==='Enter') blogSystem.addComment(${post.id}, this.value); this.value=''">
-                                    <button class="btn btn-primary" onclick="blogSystem.addComment(${post.id}, this.previousElementSibling.value); this.previousElementSibling.value=''">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                </div>
-                                <div class="comments-list">
-                                    ${postComments.map(comment => `
-                                        <div class="comment">
-                                            <div class="comment-author">${comment.author}</div>
-                                            <div class="comment-text">${comment.text}</div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <button class="post-action" onclick="blogSystem.sharePost(${post.id})">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                        </div>
-                    `;
-
-                    container.appendChild(postElement);
-                });
-            }
         }
 
         // Глобальные функции для модального окна шаринга
@@ -1610,6 +1596,9 @@
 
         // Инициализация системы
         const blogSystem = new BlogSystem();
+
+        // Глобальный доступ к системе для onclick событий
+        window.blogSystem = blogSystem;
     </script>
 </body>
 </html>
